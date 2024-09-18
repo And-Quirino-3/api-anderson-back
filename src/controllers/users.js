@@ -50,11 +50,22 @@ const userUpdate = (req, res) => {
 
 }
 
+const userDelete = (req, res) => {
+    const {id} = req.params
+
+    const indexUser = users.findIndex(user => user.id === Number(id))
+    users.splice(indexUser, 1)
+   
+    
+    res.status(200).send("User deleted!")
+}
+
 
 
 module.exports = {
     usersList,
     userGet,
     userCreate,
-    userUpdate
+    userUpdate,
+    userDelete
 }
