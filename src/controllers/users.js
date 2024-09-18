@@ -1,67 +1,89 @@
 const users = require('../database/data')
 const pool = require('../connection')
 
-const usersList = async(req, res) => {
+const usersList = async (req, res) => {
     try {
         const usersList = await pool.query('select * from users')
-        res.status(200).send(usersList.rows)
+        return res.status(200).send(usersList.rows)
     } catch (error) {
-        res.status(500).send(error.message)
-    } 
-}
-
-const userGet = (req, res) => {
-    const {id} = req.params
-
-    if(Number(id) > users.length) {
-        res.send("Invalid ID")
-    }else {
-    const user = users.find( user => user.id === Number(id))
-    res.status(200).send(user)
+        return res.status(500).send({ message: error.message })
     }
 }
 
-const userCreate = (req, res) => {
-    const data = req.body
+const userGet = async (req, res) => {
+    const { id } = req.params
 
-    const newUser = {
-        id: users.length + 1,
-        name: data.name,
-        email: data.email,
-        password: data.password
+    try {
+        const query = "select * from users where id = $1"
+        const params = [Number(id)]
+
+        const userFound = await pool.query(query, params)
+
+        if (userFound.rowCount === 0) {
+            return res.status(404).json({ message: "User not found" })
+        }
+
+        res.status(200).send(userFound.rows[0])
+    } catch (error) {
+        return res.status(500).send({ message: error.message })
     }
-
-    users.push(newUser)
-    
-    res.status(201).send(newUser)
 }
 
-const userUpdate = (req, res) => {
-    const {id} = req.params
-    const { name, email, password} = req.body
+const userCreate = async (req, res) => {
+    const { name, email, password } = req.body
 
-    if(Number(id) > users.length) {
-        res.send("Invalid ID")
-    }else {
-    const user = users.find( user => user.id === Number(id))
+    try {
+        const query = 'insert into users (name, email, password) values ($1, $2, $3) returning *'
+        const params = [name, email, password]
 
-    user.name = name
-    user.email = email
-    user.password = password
+        const user = await pool.query(query, params)
 
-    res.status(200).send("User Updated!")
+        if (user.rowCount === 0) {
+            return res.status(404).json({ message: "User not created" })
+        }
+
+        res.status(201).send(user.rows[0])
+    } catch (error) {
+        return res.status(500).send({ message: error.message })
     }
+}
+
+const userUpdate = async (req, res) => {
+    const { id } = req.params
+    const { name, email, password } = req.body
+
+    try {
+        const query = 'update users set name = $1, email = $2, password = $3 where id = $4 returning *'
+        const params = [name, email, password, Number(id)]
+
+        const userUpdate = await pool.query(query, params)
+
+        res.status(200).send(userUpdate.rows[0])
+    } catch (error) {
+        return res.status(500).send({ message: error.message })
+    }
+
 
 }
 
-const userDelete = (req, res) => {
-    const {id} = req.params
+const userDelete = async (req, res) => {
+    const { id } = req.params
 
-    const indexUser = users.findIndex(user => user.id === Number(id))
-    users.splice(indexUser, 1)
-   
-    
-    res.status(200).send("User deleted!")
+    try {
+        const query = 'delete from users where id = $1 returning *'
+        const params = [Number(id)]
+
+        const userDeleted = await pool.query(query, params)
+
+        if (userDeleted.rowCount === 0) {
+            return res.status(404).json({message: "User not found"})
+        }
+
+
+        res.status(200).send(userDeleted.rows[0])
+    } catch (error) {
+        return res.status(500).send({ message: error.message })
+    }
 }
 
 
