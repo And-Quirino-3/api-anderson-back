@@ -1,21 +1,11 @@
 const express = require('express')
-const users = require('./dados/dados')
+const rotas = require('./rotas')
 
 const app = express()
+app.use(rotas)
 
-app.get('/users', (req, res) => {
-    
-    res.status(200).send(users)
-})
-
-app.get('/users/:id', (req, res) => {
-    const {id} = req.params
-
-    const user = users.find( user => user.id === Number(id))
-    
-    res.status(200).send(user)
-})
+const port = 3000
 
 app.listen(3000, () => {
-    console.log("Servidor Iniciado")
+    console.log(`Servidor Iniciado na Porta:${port}`)
 })
