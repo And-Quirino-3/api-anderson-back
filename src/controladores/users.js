@@ -17,8 +17,25 @@ const obterUsuario = (req, res) => {
     }
 }
 
+const criarUsuario = (req, res) => {
+    const dados = req.body
+
+    const novoUsuario = {
+        id: users.length + 1,
+        name: dados.name,
+        email: dados.email,
+        password: dados.password
+    }
+
+    users.push(novoUsuario)
+    
+    res.status(201).send(novoUsuario)
+}
+
+
+
 module.exports = {
     listarUsuarios,
-    obterUsuario
-
+    obterUsuario,
+    criarUsuario
 }
