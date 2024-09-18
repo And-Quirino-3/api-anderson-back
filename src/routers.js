@@ -1,14 +1,18 @@
 const express = require('express')
-const userController = require('./controllers/users')
+const { usersList } = require('./controllers/user/user-list')
+const { userGet } = require('./controllers/user/usr-get')
+const { userCreate } = require('./controllers/user/user-create')
+const { userUpdate } = require('./controllers/user/user-update')
+const { userDelete } = require('./controllers/user/user-delete')
 
 const routers = express()
 
 
-routers.get('/users', userController.usersList)
-routers.get('/users/:id', userController.userGet)
-routers.post('/users', userController.userCreate)
-routers.put('/users/:id', userController.userUpdate)
-routers.delete('/users/:id', userController.userDelete)
+routers.get('/users', usersList)
+routers.get('/users/:id', userGet)
+routers.post('/users', userCreate)
+routers.put('/users/:id', userUpdate)
+routers.delete('/users/:id', userDelete)
 
 
 
