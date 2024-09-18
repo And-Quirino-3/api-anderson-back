@@ -1,9 +1,13 @@
 const users = require('../database/data')
+const pool = require('../connection')
 
-
-const usersList = (req, res) => {
-    
-    res.status(200).send(users)
+const usersList = async(req, res) => {
+    try {
+        const usersList = await pool.query('select * from users')
+        res.status(200).send(usersList.rows)
+    } catch (error) {
+        res.status(500).send(error.message)
+    } 
 }
 
 const userGet = (req, res) => {
