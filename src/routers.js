@@ -4,8 +4,11 @@ const { userGet } = require('./controllers/user/usr-get')
 const { userCreate } = require('./controllers/user/user-create')
 const { userUpdate } = require('./controllers/user/user-update')
 const { userDelete } = require('./controllers/user/user-delete')
+const { validator} = require('./middlewares/validator')
 
 const routers = express()
+
+routers.use('./users', validator)
 
 
 routers.get('/users', usersList)
